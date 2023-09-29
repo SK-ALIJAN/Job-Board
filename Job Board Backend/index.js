@@ -1,15 +1,23 @@
-require("dotenv").config();
 const express = require("express");
-const App = express();
+const app = express();
 const cors = require("cors");
-const { JobSeeker } = require("./Routes/JobseekerRoute");
-const { Recruiter } = require("./Routes/Recruiter");
+const { JobSeekerRoute } = require("./Routes/JobseekerRoute");
+const { RecruiterRoute } = require("./Routes/Recruiter");
+const { connection } = require("./Database");
 
-App.use(express.json());
-App.use(cors());
-App.use("/jobseek", JobSeeker);
-App.use("/recruiter", Recruiter);
+require("dotenv").config();
 
-App.listen(process.env.port, () => {
-  console.log(`server is running at ${process.env.port} port`);
+app.use(cors());
+app.use(express.json());
+app.use("/jobseeker", JobSeekerRoute);
+app.use("/recruiter", RecruiterRoute);
+
+app.listen(process.env.port, async () => {
+  try {
+    console.log(`server is runnning ${process.env.port}`);
+    await connection;
+    console.log("database connected successfully!");
+  } catch (error) {
+    console.log("something went wrong");
+  }
 });
