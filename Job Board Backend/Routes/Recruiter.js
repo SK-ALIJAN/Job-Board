@@ -3,6 +3,7 @@ const RecruiterRoute = express.Router();
 const { RecruiterSignupModel } = require("../Model/RecruiterModel");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
+const { MailSenderFunction } = require("../NodeMailer");
 
 //Signup Router
 RecruiterRoute.post("/signup", (req, res, next) => {
@@ -46,6 +47,63 @@ RecruiterRoute.post("/login", async (req, res, next) => {
       });
     } else {
       res.status(200).json({ message: "User Not Found", data: [] });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// forgot email
+RecruiterRoute.post("/forgotemail", async (req, res) => {
+  let { username } = req.body;
+  try {
+    let userData = await RecruiterSignupModel.findOne({ username });
+
+    if (condition) {
+      let configrationMesssage = {
+        mailSubject: "Recover Email",
+        mailContent: `Thank You ! ${userData.name} for email recovering , your email id is :  ${userData.email}`,
+        Headline: "Recover Email",
+      };
+
+      MailSenderFunction(
+        userData.email,
+        configrationMesssage.mailSubject,
+        configrationMesssage.mailContent,
+        configrationMesssage.Headline
+      )
+        .then((info) => {
+          res.status(200).json({ message: "please check Your email" });
+        })
+        .catch((error) => {
+          res.status(200).json({ error: error.message });
+        });
+    } else {
+      res.status(200).json({ message: "wrong username" });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// reset password
+RecruiterRoute.post("/resetpassword", async (req, res) => {
+  let { email, password, confirmpassword } = req.body;
+  try {
+    if (password !== confirmpassword) {
+      res.status(200).json({ message: "password are not matched" });
+    } else {
+      let userData = await RecruiterSignupModel.findOne({ email });
+      if (userData) {
+        await RecruiterSignupModel.updateOne(
+          { _id: userData[_id] },
+          { $set: { password } }
+        );
+
+        res.status(200).json({ message: "password change successfully" });
+      } else {
+        res.status(200).json({ message: "Check email,user not found" });
+      }
     }
   } catch (error) {
     res.status(400).json({ error: error.message });

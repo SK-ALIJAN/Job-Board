@@ -1,0 +1,26 @@
+ // const transporter = nodemailer.createTransport({
+  //     service: "gmail",
+  //     auth: {
+  //       user: "connect2skalijan@gmail.com",
+  //       pass: "qety avwf ejwv lhnj",
+  //     },
+  //   });
+
+  //   const mailOptions = {
+  //     from: 'Sk Alijan <connect2skalijan@gmail.com>',
+  //     to: "alizaan8695@gmail.com",
+  //     subject: "Hello from Nodemailer",
+  //     text: "This is a test email sent from Nodemailer.",
+  //     html: "<b>This is a test email sent from Nodemailer,--> thank you!</b>",
+  //   };
+
+  //   transporter.sendMail(mailOptions, (error, info) => {
+  //     if (error) {
+  //       console.error("Error sending email: " + error);
+  //       res.json({message:error})
+  //     } else {
+  //       console.log("Email sent: " + info.response);
+  //       res.json({message:info})
+  //     }
+  //   });
+
