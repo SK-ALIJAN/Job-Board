@@ -4,6 +4,7 @@ const { JobSeekerSignupModel } = require("../Model/JobSeekerModel");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const { MailSenderFunction } = require("../NodeMailer");
+const BlacklistedUser = require("../Model/BlacklistedJobseeker&Recruiter");
 
 //Signup Router
 JobSeekerRoute.post("/signup", (req, res, next) => {
@@ -17,7 +18,10 @@ JobSeekerRoute.post("/signup", (req, res, next) => {
       }
       let newData = new JobSeekerSignupModel({ name, email, password: hash });
       await newData.save();
-      var token = jwt.sign({ foo: "bar" }, "JobSeekerToken");
+      var token = jwt.sign(
+        { userId: newData[userId], _id: newData[_id] },
+        "JobSeekerToken"
+      );
       res.json({ message: "seccessfully created", data: newData, token });
     });
   } catch (error) {
@@ -36,7 +40,10 @@ JobSeekerRoute.post("/login", async (req, res, next) => {
       // comparing hash password
       bcrypt.compare(password, jobseeker.password, function (err, result) {
         if (result) {
-          var token = jwt.sign({ foo: "bar" }, "JobSeekerToken");
+          var token = jwt.sign(
+            { userId: jobseeker[userId], _id: jobseeker[_id] },
+            "JobSeekerToken"
+          );
           res.json({
             message: "Successfully Logged In",
             token,
@@ -99,10 +106,33 @@ JobSeekerRoute.post("/resetpassword", async (req, res) => {
           { _id: userData[_id] },
           { $set: { password } }
         );
-         res.status(200).json({message:"password change successfully"})
+        res.status(200).json({ message: "password change successfully" });
       } else {
         res.status(200).json({ message: "Check email,user not found" });
       }
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// log out functionality
+JobSeekerRoute.get("/logout", (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  try {
+    if (token) {
+      jwt.verify(token, "JobSeekerToken", async (err, decode) => {
+        if (err) {
+          res.status(200).json({ message: err });
+        } else {
+          let { userId } = decode;
+          let user = new BlacklistedUser({ userId });
+          await user.save();
+          res.status(200).json({ message: "succesffuly logged out" });
+        }
+      });
+    } else {
+      res.status(200).json({ message: "please Provided token " });
     }
   } catch (error) {
     res.status(400).json({ error: error.message });

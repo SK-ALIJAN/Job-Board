@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 // signup schema
 const signupSchema = mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  password: { type: String, required: true },
-  company: { type: String, required: true },
-  username: { type: String, required: true },
+  name: { type: String },
+  email: { type: String },
+  password: { type: String },
+  company: { type: String },
+  username: { type: String },
   designation: { type: String },
   city: { type: String },
 });
