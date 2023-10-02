@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-// signup schema
+////////////   signup Schema   /////////////////
 const signupSchema = mongoose.Schema({
   name: { type: String },
   email: { type: String },
@@ -13,6 +13,27 @@ const signupSchema = mongoose.Schema({
 
 const RecruiterSignupModel = mongoose.model("recruiter", signupSchema);
 
+
+//////////   job Posting Schema  //////////////
+const recruiterJobPostSchema = mongoose.Schema({
+  role: String,
+  company: String,
+  location: String,
+  noticePeriod: String,
+  deadline: String,
+  package: String,
+  experience: String,
+  opening: Number,
+  aboutCompany: String,
+  logo: String,
+  skills: Array,
+  userId: String,
+  applicants: Array,
+});
+
+const RecruiterJobPostModel = mongoose.model("jobpost", recruiterJobPostSchema);
+
 module.exports = {
   RecruiterSignupModel,
+  RecruiterJobPostModel,
 };
