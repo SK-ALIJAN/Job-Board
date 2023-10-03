@@ -31,7 +31,7 @@ JobSeekerRoute.post("/signup", (req, res, next) => {
   }
 });
 
-///////////   Login Router  /////////////////////
+///////////   Login Router  //////////////////
 JobSeekerRoute.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
 
