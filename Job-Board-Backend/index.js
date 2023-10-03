@@ -12,9 +12,9 @@ app.use(express.json());
 app.use("/jobseeker", JobSeekerRoute);
 app.use("/recruiter", RecruiterRoute);
 
-app.listen(process.env.port, async () => {
+app.listen(process.env.PORT, async () => {
   try {
-    console.log(`server is runnning ${process.env.port}`);
+    console.log(`server is runnning ${process.env.PORT}`);
     await connection;
     console.log("database connected successfully!");
   } catch (error) {
