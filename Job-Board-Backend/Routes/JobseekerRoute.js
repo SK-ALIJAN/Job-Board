@@ -9,29 +9,34 @@ const { RecruiterJobPostModel } = require("../Model/RecruiterModel");
 const { checkJobSeekerBlacklist } = require("./CheckJobSeekerBlackList");
 
 //////////   Signup Router   //////////////
-JobSeekerRoute.post("/signup", (req, res, next) => {
+JobSeekerRoute.post("/signup", async (req, res, next) => {
   const { name, email, password } = req.body;
 
   try {
-    ////////   here i am hashing the password   //////////
-    bcrypt.hash(password, 5, async function (err, hash) {
-      if (err) {
-        res.status(400).json({ err: err.message });
-      }
-      let newData = new JobSeekerSignupModel({ name, email, password: hash });
-      await newData.save();
-      var token = jwt.sign(
-        { userId: newData._id, _id: newData._id },
-        "JobSeekerToken"
-      );
-      res.json({ message: "seccessfully created", data: newData, token });
-    });
+    let data = await JobSeekerSignupModel({ email });
+    if (data) {
+      res.status(200).json({ message: "already registered!" });
+    } else {
+      ////////   here i am hashing the password   //////////
+      bcrypt.hash(password, 5, async function (err, hash) {
+        if (err) {
+          res.status(400).json({ err: err.message });
+        }
+        let newData = new JobSeekerSignupModel({ name, email, password: hash });
+        await newData.save();
+        var token = jwt.sign(
+          { userId: newData._id, _id: newData._id },
+          "JobSeekerToken"
+        );
+        res.json({ message: "seccessfully created", data: newData, token });
+      });
+    }
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-///////////   Login Router  //////////////////
+///////////   Login Router  /////////////////////
 JobSeekerRoute.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
 

@@ -11,23 +11,29 @@ const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 
 /////////////////   Signup Router  /////////////////////
-RecruiterRoute.post("/signup", (req, res, next) => {
-  const { password } = req.body;
+RecruiterRoute.post("/signup", async (req, res, next) => {
+  const { password, email } = req.body;
 
   try {
-    /////////////  here i am hashing the password   ///////////////
-    bcrypt.hash(password, 5, async function (err, hash) {
-      if (err) {
-        res.status(400).json({ err: err.message });
-      }
-      let newData = new RecruiterSignupModel({ ...req.body, password: hash });
-      await newData.save();
-      var token = jwt.sign(
-        { userId: newData.id, _id: newData.id },
-        "RecruiterToken"
-      );
-      res.json({ message: "seccessfully created", data: newData, token });
-    });
+    let data = await RecruiterSignupModel({ email });
+
+    if (data) {
+      res.status(200).json({ message: "already registered!" });
+    } else {
+      /////////////  here i am hashing the password   ///////////////
+      bcrypt.hash(password, 5, async function (err, hash) {
+        if (err) {
+          res.status(400).json({ err: err.message });
+        }
+        let newData = new RecruiterSignupModel({ ...req.body, password: hash });
+        await newData.save();
+        var token = jwt.sign(
+          { userId: newData.id, _id: newData.id },
+          "RecruiterToken"
+        );
+        res.json({ message: "seccessfully created", data: newData, token });
+      });
+    }
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -109,7 +115,7 @@ RecruiterRoute.post("/resetpassword", async (req, res) => {
         bcrypt.hash(newpassword, 5, async function (err, hash) {
           await RecruiterSignupModel.updateOne(
             { _id: userData._id },
-            { $set:{password:hash } }
+            { $set: { password: hash } }
           );
         });
 
