@@ -15,7 +15,7 @@ RecruiterRoute.post("/signup", async (req, res, next) => {
   const { password, email } = req.body;
 
   try {
-    let data = await RecruiterSignupModel({ email });
+    let data = await RecruiterSignupModel.findOne({ email });
 
     if (data) {
       res.status(200).json({ message: "already registered!" });

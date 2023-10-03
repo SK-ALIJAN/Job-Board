@@ -13,7 +13,7 @@ JobSeekerRoute.post("/signup", async (req, res, next) => {
   const { name, email, password } = req.body;
 
   try {
-    let data = await JobSeekerSignupModel({ email });
+    let data = await JobSeekerSignupModel.findOne({ email });
     if (data) {
       res.status(200).json({ message: "already registered!" });
     } else {
